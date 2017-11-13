@@ -1,3 +1,6 @@
+                                                    SharePoint 2013 
+                                                    ===============
+
 Active Directory Accounts
 -------------------------
 
@@ -36,6 +39,15 @@ Add the SPSetup Account to the local Administrator group
 frontServer > $admingroup=[adsi]"WinNT://localhost/administrators,group"
 frontServer > $admingroup.add('WinNT://sharepoint/psspsetup,user')
 frontServer > Exit-PSSession
+
+Installing Features and Prerequisites
+-------------------------------------
+Add-WindowsFeature is a command from the ServerManager Powershell module that allows us to add the Roles and Features 
+> Import-Module servermanager
+> Add-WindowsFeature (See Image)
+> Add-WindowsFeature (See Image)
+
+
 
 
 
