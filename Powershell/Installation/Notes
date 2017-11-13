@@ -35,17 +35,41 @@ Add the SPSetup Account to the local Administrator group
 > $admingroup=[adsi]"WinNT://localhost/administrators,group"
 > $admingroup
 > $admingroup.psbase.invoke("Add", ([adsi]"WinNT://sharepoint/psspsetup").path)
+
+Go to the frontServer
 > Enter-PSSession frontServer
 frontServer > $admingroup=[adsi]"WinNT://localhost/administrators,group"
 frontServer > $admingroup.add('WinNT://sharepoint/psspsetup,user')
 frontServer > Exit-PSSession
 
-Installing Features and Prerequisites
--------------------------------------
+Installing Windows Features 
+---------------------------
 Add-WindowsFeature is a command from the ServerManager Powershell module that allows us to add the Roles and Features 
 > Import-Module servermanager
 > Add-WindowsFeature (See Image)
 > Add-WindowsFeature (See Image)
+Restart the server
+> Restart-Computer -force
+
+Go to the frontServer
+> Enter-PSSession frontServer
+frontServer> Add-WindowsFeature (See Image)
+frontServer> Add-WindowsFeature (See Image)
+frontServer > Exit-PSSession
+> Restart-Computer -ComputerName frontServer -force
+
+Installing Prerequisites
+------------------------
+> PrerequisiteInstaller.exe /Powershell:"path to Prerequisite Installer"
+
+
+
+
+
+
+
+
+
 
 
 
