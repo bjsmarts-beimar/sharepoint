@@ -1,0 +1,51 @@
+Active Directory Accounts
+-------------------------
+
+SPSetUp -> Account for Sharepoint Installation
+Must be part of the local admin group
+
+SPFarm -> SharePoint Farm Account
+Must NOT be part fo the local admin group on any of the servers
+
+SPSQL -> SharePoint SQL Account
+Account used specifically for SQL access
+
+Note: All the above accounts must have securityadmin, dbcreator, db_owner roles on SQL Server
+
+Create Active Directory Accounts
+--------------------------------
+
+> import-module servermanager
+> Add-WindowsFeature -name "rsat-ad-powershell" -IncludeAllSubFeature
+> import-module activedirectory
+to test get any AD ADUser
+> Get-ADUser bmedina
+> New-ADUser -SamAccountName "PSSQSQL" -Name "PSSPSQL" -path "CN=Users,DC=SharePoint,DC=com" -PasswordNeverExpires $true -Enabled $true -AccountPassword (Read-host -AsSecureString "Please Input Password")
+> $template = Get-ADUser PSSPSQL
+> New-ADUser -SamAccountName "PSSPFARM" -Name "PSSPFARM" -Instance $template -AccountPassword (Read-host -AsSecureString "Please Input Password")
+> New-ADUser -SamAccountName "PSSPSETUP" -Name "PSSPSETUP" -Instance $template -AccountPassword (Read-host -AsSecureString "Please Input Password")
+
+Note: you should create ps1 and script it.
+
+Add the SPSetup Account to the local Administrator group
+--------------------------------------------------------
+> $admingroup=[adsi]"WinNT://localhost/administrators,group"
+> $admingroup
+> $admingroup.psbase.invoke("Add", ([adsi]"WinNT://sharepoint/psspsetup").path)
+> Enter-PSSession frontServer
+frontServer > $admingroup=[adsi]"WinNT://localhost/administrators,group"
+frontServer > $admingroup.add('WinNT://sharepoint/psspsetup,user')
+frontServer > Exit-PSSession
+
+
+
+
+
+
+
+
+
+
+
+
+
