@@ -14,6 +14,7 @@ Thank you for choosing to host your IT solutions with Microsoft.
 Sincerely, 
 The Microsoft Office 365 Team
 
+
 SharePoint
 
 https://bjsmartsllc.sharepoint.com/SitePages/Home.aspx
