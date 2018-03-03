@@ -1,0 +1,16 @@
+1. create the document library "Spec and Revision Library"
+2. Add Multiple People field "Approvers"
+3. create the sharepoint list "Workflow Task Item List"
+4. Add the following columns to this list:
+    Revision Name (text field)
+    RevisionId (number field)
+    Task Status (choice field) Approve|Reject 
+    Comments (free text)
+
+5. create the sharepoint list "Workflow Item List"
+6. Add the following columns to this list:
+    Revision Name (text field)
+    RevisionId (number field)
+    Workflow Status (choice field) Initiation|Revision|Accepted|Accepted with Restrictions|Escalate|Rejected
+
+

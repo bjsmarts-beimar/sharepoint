@@ -1,0 +1,22 @@
+<script type="text/javascript">
+
+function HidePageTitle() {
+document.getElementById('pageTitle').style.visibility = 'hidden';
+}
+_spBodyOnLoadFunctionNames.push("HidePageTitle");
+
+</script>
+
+
+https://sharepoint.stackexchange.com/questions/214425/what-happens-when-i-enable-sharepoint-server-publishing-sharepoint-server-publ
+
+
+Probably the most simple way to hide View header would be to use CSS
+
+1 Add Content Editor web part on View page (located under Media & Content category)
+
+2 Insert the following code into Content
+
+<style type="text/css">
+    .ms-viewheadertr { display:none; }
+</style>
