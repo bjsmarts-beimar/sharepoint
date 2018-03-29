@@ -1,0 +1,26 @@
+How to connect to SharePoint Online using Powershell
+====================================================
+
+1. Install the SharePoint Online Management Shell by downloading and running the SharePoint Online Management Shell.
+https://www.microsoft.com/en-us/download/details.aspx?id=35588
+
+2. To connect with a user name and password, run the following command:
+
+$adminUPN="jmedina@bjsmarts001.onmicrosoft.com"
+$orgName="bjsmarts001"
+$userCredential = Get-Credential -UserName $adminUPN -Message "Type the password."
+Connect-SPOService -Url https://bjsmarts001-admin.sharepoint.com -Credential $userCredential
+
+3. To test the Powershell connection, run the following command:
+Get-Module | select Name, Version
+
+4. 
+
+
+
+
+SharePoint Migration Tool
+=========================
+
+https://www.youtube.com/watch?v=PbusAK1tMjU
+http://spmtreleasescus.blob.core.windows.net/install/default.htm
