@@ -1,0 +1,15 @@
+Date Condition
+
+@greaterOrEquals(formatDateTime(adddays(items('Apply_to_each')?['Created'], 2), 'dd/MM/yyyy'), formatDateTime(utcNow(), 'dd/MM/yyyy'))
+
+Email
+
+<H4>The following Spec: '​' with Rev: '' has been submitted  for your Approval
+
+Spec: <BR>
+Rev.: <BR><BR>
+
+<H4>Reminder, the review for the referenced specification is past the required 10 day review period. Use the <A HREF="​">link</A> to view the specification and accept/reject click <A HREF="/SitePages/approve.aspx?TaskId=​&RevisionId=​">here</A>.</H4>
+
+
+
