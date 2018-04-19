@@ -3,6 +3,7 @@
 
 <!-- Javascript Files -->
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js" type="text/javascript"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <style>
@@ -41,15 +42,33 @@
     </div>
     <div class="row">
         <div class="form-group">
+            <h4><label>Attachments</label></h4>            
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="form-group">     
+            <div class="col-sm-3" style="padding-left: 0px;">
+                    <input id="getFile" type="file" class="form-control-file"/>  
+                    <span id="error-revision-file" style="color: red; display: none;"><b>You must choose a file</b></span>  
+            </div>
+            <div class="col-sm-3">
+                <input id="addFileButton" type="button" class="btn btn-success" style="background-color: #337ab7; color: white;" value="Add Attachment" onclick="uploadAttachment()"/>        
+            </div>                                           
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group">
             <h4><label>Comments</lalel></h4>
-            <textarea class="form-control" rows="5" id="field-comments" style="width: 540px;"></textarea>
+            <textarea class="form-control" rows="5" id="field-comments"  maxlength="1500" style="width: 540px;"></textarea>
             <span id="error-comments" style="color: red; display: none;">You must provide Comments</span>
         </div> 
     </div>
     <div class="row">
         <div class="form-group">
-            <button type="button" class="btn btn-primary" onclick="Ok()">Save</button>
-            <button type="button" class="btn btn-danger" onclick="Cancel()">Cancel</button>
+            <button type="button" class="btn btn-primary" id="OkButton" onclick="Ok()">Save</button>
+            <button type="button" class="btn btn-danger" id="CancelButton" onclick="Cancel()">Cancel</button>
         </div> 
     </div>
 </div>

@@ -4,7 +4,7 @@ var selectedUsers = [];
 var SpecName = '';
 var newName = '';
 var issueName = '';
-var itemFileMetadata = null;
+var _fileListItemUri = '';
 
 jQuery(document).ready(function () {
 
@@ -101,19 +101,6 @@ function uploadFile() {
     // Get the server URL.
     var serverUrl = _spPageContextInfo.webAbsoluteUrl;
 
-    $.blockUI({ css: { 
-        border: 'none', 
-        padding: '15px',
-        message: '<H4>Loading file ...</H4>',      
-        backgroundColor: '#000', 
-        '-webkit-border-radius': '10px', 
-        '-moz-border-radius': '10px', 
-        opacity: .5, 
-        color: '#fff' 
-    } }); 
-
-    setTimeout($.unblockUI, 30000);
-
     // Initiate method calls using jQuery promises.
     // Get the local file as an array buffer.
     var getFile = getFileBuffer();
@@ -123,12 +110,11 @@ function uploadFile() {
         var addFile = addFileToFolder(arrayBuffer);
         addFile.done(function (file, status, xhr) {
 
-            // Get the list item that corresponds to the uploaded file.            
-            var getItem = getListItem(file.d.ListItemAllFields.__deferred.uri);
+            // Get the list item that corresponds to the uploaded file.    
+            _fileListItemUri = file.d.ListItemAllFields.__deferred.uri;        
+            var getItem = getListItem(_fileListItemUri);
             getItem.done(function (listItem, status, xhr) {
-
-                itemFileMetadata = listItem.d.__metadata;
-
+                
                 // Change the display name and title of the list item.
                 var changeItem = updateListItem(listItem.d.__metadata);
                 changeItem.done(function (data, status, xhr) {
@@ -178,6 +164,22 @@ function uploadFile() {
             type: "POST",            
             data: arrayBuffer,
             processData: false,
+            beforeSend : function() {
+                $.blockUI({ 
+                    message: '<h4>Uploading Document ...</h4>',
+                    css: { 
+                    border: 'none', 
+                    padding: '15px',                          
+                    backgroundColor: '#000', 
+                    '-webkit-border-radius': '10px', 
+                    '-moz-border-radius': '10px', 
+                    opacity: .5, 
+                    color: '#fff' 
+                } }); 
+            }, 
+            complete: function () {
+                $.unblockUI();                    
+            },
             headers: {
                 "accept": "application/json;odata=verbose",
                 "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
@@ -221,25 +223,32 @@ function uploadFile() {
             url: itemMetadata.uri,
             type: "POST",
             data: body,
+            beforeSend : function() {
+                $.blockUI({ 
+                    message: '<h4>Updating Document Properties ...</h4>',
+                    css: { 
+                    border: 'none', 
+                    padding: '15px',                          
+                    backgroundColor: '#000', 
+                    '-webkit-border-radius': '10px', 
+                    '-moz-border-radius': '10px', 
+                    opacity: .5, 
+                    color: '#fff' 
+                } }); 
+            }, 
+            complete: function () {
+                $.unblockUI();                    
+            },            
             headers: {
                 "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
                 "content-type": "application/json;odata=verbose",
                 "content-length": body.length,
                 "IF-MATCH": itemMetadata.etag,
+                //"IF-MATCH": "*",
                 "X-HTTP-Method": "MERGE"
             }
         });
     }
-}
-
-// Display error messages. 
-function onError(error) {    
-    //alert(error.responseText);
-    console.log(error.responseText);
-    alert('Error has occurred. Please try to upload the revision file again.');
-    
-    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
-    window.location = serverUrl + "/SitePages/add.aspx";
 }
 
 function GetItemTypeForListName(name) {
@@ -248,54 +257,89 @@ function GetItemTypeForListName(name) {
 
 function onChangeItemError(error) {
 
-    console.log('Entering -> OnChangeItemError');
+    console.log('onChangeItemError has occurred:', error);
 
-    setTimeout(function()
-    { 
-        var users = getApprovals();
-
-        console.log('users:', users);    
-        console.log('itemFileMetadata', itemFileMetadata.uri)    
+    var getItem = getListItem(_fileListItemUri);
+    getItem.done(function (listItem, status, xhr) {
         
-        var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ApproversId':{3},'Specification':'{4}','Issue':'{5}'}}",
-            itemFileMetadata.type, SpecName, SpecName, users, newName, issueName );  
+        // Change the display name and title of the list item.
+        var changeItem = updateListItem(listItem.d.__metadata);
+        changeItem.done(function (data, status, xhr) {
+            alert('Your spec has been submitted to internal/external reviewers');                                        
+            window.location = dashboardPageUrl;
+        });
+        changeItem.fail(onError); 
+    });
+
+    function getListItem(fileListItemUri) {
+        
+                // Send the request and return the response.
+                return jQuery.ajax({
+                    url: fileListItemUri,
+                    type: "GET",
+                    headers: { "accept": "application/json;odata=verbose" }
+                });
+            }
+        
+            // Change the display name and title of the list item.
+            function updateListItem(itemMetadata) {
+        
+                // Define the list item changes. Use the FileLeafRef property to change the display name. 
+                // For simplicity, also use the name as the title. 
+                // The example gets the list item type from the item's metadata, but you can also get it from the
+                // ListItemEntityTypeFullName property of the list.
+        
+                //var user = "8";
+                //var users = "{ 'results': ['8', '13'] }";
+                var users = getApprovals();
+                
+                var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ApproversId':{3},'Specification':'{4}','Issue':'{5}'}}",
+                    itemMetadata.type, SpecName, SpecName, users, newName, issueName );
+        
+                //var body = String.format("{{'__metadata':{{'type':'{0}'}},'Title':'{1}','ApproversId':{2}}}",
+                //itemMetadata.type, newName, users );
+                
+                // Send the request and return the promise.
+                // This call does not return response content from the server.
+                return jQuery.ajax({
+                    url: itemMetadata.uri,
+                    type: "POST",
+                    data: body,
+                    beforeSend : function() {
+                        $.blockUI({ 
+                            message: '<h4>Updating Document Properties ...</h4>',
+                            css: { 
+                            border: 'none', 
+                            padding: '15px',                          
+                            backgroundColor: '#000', 
+                            '-webkit-border-radius': '10px', 
+                            '-moz-border-radius': '10px', 
+                            opacity: .5, 
+                            color: '#fff' 
+                        } }); 
+                    }, 
+                    complete: function () {
+                        $.unblockUI();                    
+                    },            
+                    headers: {
+                        "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                        "content-type": "application/json;odata=verbose",
+                        "content-length": body.length,
+                        "IF-MATCH": itemMetadata.etag,
+                        //"IF-MATCH": "*",
+                        "X-HTTP-Method": "MERGE"
+                    }
+                });
+            }
             
-        jQuery.ajax({
-                url: itemFileMetadata.uri,
-                type: "POST",
-                data: body,
-                headers: {
-                    "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
-                    "content-type": "application/json;odata=verbose",
-                    "content-length": body.length,
-                    "IF-MATCH": itemFileMetadata.etag,
-                    "X-HTTP-Method": "MERGE"
-                },
-                success: function(data)   
-                {  
-                    console.log('Success:' + data);              
-                },  
-                error: function(data)  
-                {  
-                    console.log('error', data);
-                    alert('Error has occurred. Please try to upload the revision file again.');
-                    
-                    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
-                    window.location = serverUrl + "/SitePages/add.aspx";  
-                }
-        });     
-    }, 10000);
-            
 }
 
-function onGetItemError(error) {
-    console.log(error.responseText);
-}
-
-function onAddFileError(error) {
-    console.log(error.responseText);
-}
-
-function onGetFileError(error) {
-    console.log(error.responseText);
+// Display error messages. 
+function onError(error) {    
+    
+    console.log('onError has occurred:', error);
+    alert('Error has occurred. Please try to upload the revision file again.');
+    
+    //var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+    //window.location = serverUrl + "/SitePages/add.aspx";
 }

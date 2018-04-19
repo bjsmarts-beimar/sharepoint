@@ -1,6 +1,8 @@
 'use strict';
 
 var PageContextRevisionID = null;
+var currentComments = null;
+var assignTo = null;
 
 jQuery(document).ready(function () {
     
@@ -25,6 +27,7 @@ function retrieveRevisionItem(RevisionID)
         cache: false,  
         success: function(data)   
         {  
+            retrieveTaskItem(RevisionID);
             console.log(data);
             if ( data.d.results.length > 0 )
             {
@@ -44,6 +47,38 @@ function retrieveRevisionItem(RevisionID)
                     url = url + "&Create=Yes&Source=reprocess.aspx";
                     jQuery("#ExceptionForm").replaceWith(jQuery('<a>').attr('href', url).text('Create Exception Form'));
                 }
+            }  
+        },  
+        error: function(data)  
+        {  
+            alert(data.responseText);  
+        }  
+    });  
+}
+
+function retrieveTaskItem(RevisionID)  
+{  
+    jQuery.ajax  
+    ({  
+        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('Tasks')/items?$filter=Revision_x0020_Id eq " + RevisionID,  
+        type: "GET",  
+        headers:  
+        {  
+            "Accept": "application/json;odata=verbose",  
+            "Content-Type": "application/json;odata=verbose",  
+            "X-RequestDigest": $("#__REQUESTDIGEST").val(),  
+            "IF-MATCH": "*",  
+            "X-HTTP-Method": null  
+        },  
+        cache: false,  
+        success: function(data)   
+        {  
+            console.log(data);
+            if ( data.d.results.length > 0 )
+            {
+                var item = data.d.results[0];
+                currentComments = item.Comments;       
+                assignTo = item.AssignTo;           
             }  
         },  
         error: function(data)  
@@ -123,12 +158,28 @@ function UpdateRejectTasks(RevisionId)
 
 function UpdateTaskItem(taskId, newTitle)
 {
+
+    var utc = new Date().toLocaleString(); 
+    var signature = "Wrote on " + utc;
+    var commentsVal = "";
+    
+    if ( currentComments !== null ) {
+         commentsVal = currentComments + '<br>' + $("#field-comments").val() + '<br>' + signature + '<br>';
+    }
+    else {
+        if ( $("#field-comments").val().length > 0  )
+        {
+           commentsVal = $("#field-comments").val() + '<br>' + signature;
+        }
+    }
+
     var itemType = GetItemTypeForListName("Tasks");
     var data = {
         "__metadata": { "type": itemType },        
         "Task_x0020_Status": "Pending",
         "Title": newTitle,
         "IsReprocess": "Yes",
+        "Comments": commentsVal,
     };
 
     $.ajax  

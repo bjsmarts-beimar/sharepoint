@@ -123,9 +123,11 @@ function Back()
 
 function CompleteRevision(RevisionId)
 {
+    var commentsVal = $("#field-comments").val();
     var itemType = GetItemTypeForListName("Revisions");
     var data = {
-        "__metadata": { "type": itemType },        
+        "__metadata": { "type": itemType },
+        "Comments": commentsVal,        
         "Revision_x0020_Status": "Complete"
     };
 

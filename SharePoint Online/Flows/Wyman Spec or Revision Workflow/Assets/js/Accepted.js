@@ -1,7 +1,7 @@
 (function () {
     var overrideContext = {};
     overrideContext.Templates = {};
-    overrideContext.Templates.Header = "<h3 style='padding-top: 30px;'><b>Completed New/Revised Spec<b></h3><br><br><table class='table table-striped table-hover'><tr><th>Revision Name</th><th>Revision Date Created</th></tr>";
+    overrideContext.Templates.Header = "<h3 style='padding-top: 30px;'><b>Completed New/Revised Spec<b></h3><br><br><table class='table table-striped table-hover'><tr><th>Revision Name</th><th>Revision Date Created</th><th>Comments</th></tr>";
     overrideContext.Templates.Item = overrideTemplate;
     overrideContext.Templates.Footer = "</table>";
     SPClientTemplates.TemplateManager.RegisterTemplateOverrides(overrideContext);
@@ -13,6 +13,9 @@
     + "</td>"     
     + "<td>" 
     + ctx.CurrentItem.Created 
+    + "</td>"
+    + "<td>" 
+    + ctx.CurrentItem.Comments 
     + "</td>"
     + "</tr>";
     }

@@ -11,7 +11,6 @@ Parent UI Site
 . create a page "add.aspx"
 . create a page "approve.aspx"
 . create a page "feedback.aspx"
-. create a page "exception.aspx"
 
 Child Data Site
 . create a page "dashboard.aspx"
@@ -21,6 +20,7 @@ Child Data Site
 . create a page "rejection.aspx"
 . create a page "complete.aspx"
 . create a page "management.aspx"
+. create a page "exception.aspx"
 
 . update the "Navigation" 
 
@@ -36,7 +36,7 @@ Copy the index.html
 
 . update the dashboard.aspx
 Copy the dashboard.html
-add revisions/pending list 
+add revisions/in revision list 
 add reference ~sitecollection/SiteAssets/ESWA/js/Dashboard.js
 
 . update the tasks.aspx
@@ -74,6 +74,11 @@ add reference ~sitecollection/SiteAssets/ESWA/js/accepted.js
 copy the reprocess.html
 add tasks
 add reference ~sitecollection/SiteAssets/ESWA/js/ReprocessExt.js
+
+. update the "exception.aspx"
+copy the exception.html
+add links
+add reference ~sitecollection/SiteAssets/ESWA/js/ExceptionExt.js
 
 UI Data
 =======
@@ -119,6 +124,7 @@ UI Data
     Link                    (text field)    
     HasExceptionForm        (choice field) Yes|No
     Approvers               (Person field)
+    Comments                (free text)
 
 . Create three views on the list "Revisions" 
              Complete 
@@ -160,6 +166,10 @@ UI Data
 
 . Create One View on the list "Escalations"
     Pending
+
+. create the document library "Attachments"
+. create the following list "Links"
+
 
 Workflows
 =========

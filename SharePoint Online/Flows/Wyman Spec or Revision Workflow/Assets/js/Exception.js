@@ -41,6 +41,18 @@ jQuery(document).ready(function () {
             }  
         });  
     }
+
+    var Source = getUrlParameter('Source');
+
+    if ( Source === 'tasks.aspx')
+    {
+        jQuery("#OkButton").hide();
+        jQuery("#CancelButton").text('Back');
+    }
+    else {
+        jQuery("#OkButton").show();
+        jQuery("#CancelButton").text('Cancel');
+    }
                 
 });
 
@@ -142,6 +154,150 @@ function Ok()
     }
 }
 
+function uploadAttachment()
+{
+    var fileInput = jQuery('#getFile');
+
+    if ( fileInput[0].files.length > 0 )
+    {
+        jQuery("#error-revision-file").hide();
+
+        var serverRelativeUrlToFolder = '/sites/wyman/eswa/data/Attachments/';
+        
+        // Get test values from the file input and text input page controls.
+        //var fileInput = jQuery('#getFile');
+        //newName = jQuery('#displayName').val();
+        
+        // Get the server URL.
+        var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+        
+        // Initiate method calls using jQuery promises.
+        // Get the local file as an array buffer.
+        var getFile = getFileBuffer(fileInput);
+        getFile.done(function (arrayBuffer) {
+        
+        // Add the file to the SharePoint folder.
+        var addFile = addFileToFolder(arrayBuffer, fileInput, serverUrl, serverRelativeUrlToFolder);
+            addFile.done(function (file, status, xhr) {
+                    
+                    CreateLink(file.d.Name, file.d.ServerRelativeUrl);
+        
+            });
+            addFile.fail(onError);        
+        });
+        getFile.fail(onError);
+        
+    }
+    else {
+        jQuery("#error-revision-file").show();
+    }
+
+
+    
+}
+
+function CreateLink(Name, Link)
+{
+    var listName = "Links";
+    var itemType = GetItemTypeForListName(listName);
+    var RevisionId = getUrlParameter('RevisionId');
+
+    var item = {
+        "__metadata": { "type": itemType },
+        "Title": Name,
+        "Link": Link,
+        "Revision_x0020_Id": RevisionId
+    };
+
+    $.ajax({
+        //url: _spPageContextInfo.siteAbsoluteUrl + "/_api/web/lists/getbytitle('" + listName + "')/items",
+        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/getbytitle('" + listName + "')/items",
+        type: "POST",
+        contentType: "application/json;odata=verbose",
+        data: JSON.stringify(item),
+        headers: {
+            "Accept": "application/json;odata=verbose",
+            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+        },  
+        success: function (data) {
+            console.log(data);    
+            var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+            var RevisionId = getUrlParameter('RevisionId');
+            var Create = getUrlParameter('Create');
+            var Source = getUrlParameter('Source');
+            window.location = serverUrl + "/SitePages/exception.aspx?RevisionId=" + RevisionId + "&Create=" + Create + "&Source=" + Source;
+        },
+        error: function (data) {
+            alert(data);
+        }
+    });
+}
+
+// Get the local file as an array buffer.
+function getFileBuffer(fileInput) {
+    var deferred = jQuery.Deferred();
+    var reader = new FileReader();
+    reader.onloadend = function (e) {
+        deferred.resolve(e.target.result);
+    }
+    reader.onerror = function (e) {
+        deferred.reject(e.target.error);
+    }
+    reader.readAsArrayBuffer(fileInput[0].files[0]);
+    return deferred.promise();
+}
+
+// Add the file to the file collection in the Shared Documents folder.
+function addFileToFolder(arrayBuffer, fileInput, serverUrl, serverRelativeUrlToFolder) {
+    
+            // Get the file name from the file input control on the page.
+            var parts = fileInput[0].value.split('\\');
+            var fileName = parts[parts.length - 1];
+    
+            // Construct the endpoint.
+            var fileCollectionEndpoint = String.format(
+                   "{0}/data/_api/web/getfolderbyserverrelativeurl('{1}')/files" +
+                   "/add(overwrite=true, url='{2}')",
+                   serverUrl, serverRelativeUrlToFolder, fileName);
+    
+            // Send the request and return the response.
+            // This call returns the SharePoint file.
+            return jQuery.ajax({
+                url: fileCollectionEndpoint,
+                type: "POST",            
+                data: arrayBuffer,
+                processData: false,
+                beforeSend : function() {
+                    $.blockUI({ 
+                        message: '<h4>Uploading Document ...</h4>',
+                        css: { 
+                        border: 'none', 
+                        padding: '15px',                          
+                        backgroundColor: '#000', 
+                        '-webkit-border-radius': '10px', 
+                        '-moz-border-radius': '10px', 
+                        opacity: .5, 
+                        color: '#fff' 
+                    } }); 
+                }, 
+                complete: function () {
+                    $.unblockUI();                    
+                },
+                headers: {
+                    "accept": "application/json;odata=verbose",
+                    "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                    "content-length": arrayBuffer.byteLength
+                }
+            });
+}
+
+// Display error messages. 
+function onError(error) {    
+    alert(error.responseText);
+    //console.log(error.responseText);
+    //alert('Error has occurred. Please try to upload the revision file again.');
+}
+
 function isFormValid()
 {
     var comment = jQuery('#field-comments').val();
@@ -179,7 +335,7 @@ function UpdateExceptionForm(ExceptionId)
             "X-RequestDigest": $("#__REQUESTDIGEST").val(),  
             "IF-MATCH": "*",  
             "X-HTTP-Method": "MERGE"  
-        },  
+        },        
         success: function(data, status, xhr)  
         {  
             console.log(data);

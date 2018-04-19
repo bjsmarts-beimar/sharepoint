@@ -1,5 +1,9 @@
 'use strict';
 
+var currentComments = null;
+var assignTo = null;
+var NewTitle = null;
+
 jQuery(document).ready(function () {
 
     // Check for FileReader API (HTML5) support.
@@ -8,22 +12,29 @@ jQuery(document).ready(function () {
     }
     
     var RevisionID = getUrlParameter('RevisionId');
-    retrieveRevisionItem(RevisionID);                    
+    retrieveRevisionItem(RevisionID);                        
 });
 
 function Approve()
 {
-    var TaskID = getUrlParameter('TaskId');
-    updateTask('Approve', TaskID);
-
+    if (confirm('Are you sure you want to Accept this Specification?')) {
+        
+        var TaskID = getUrlParameter('TaskId');
+        updateTask('Approve', TaskID);                        
+                                
+    } else {
+        // Do nothing!
+    }
 }
 
 function Reject()
 {
     if ( isFormValid() )
     {
-        var TaskID = getUrlParameter('TaskId');
-        updateTask('Reject', TaskID);
+        if (confirm('Are you sure you want to Reject this Specification?')) {            
+            var TaskID = getUrlParameter('TaskId');
+            updateTask('Reject', TaskID);
+        }
     }
 }
 
@@ -54,13 +65,62 @@ function getUrlParameter(sParam) {
             return sParameterName[1] === undefined ? true : sParameterName[1];
         }
     }
-};
+}; 
 
 function retrieveRevisionItem(RevisionID)  
 {  
     jQuery.ajax  
+    ({          url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('revisions')/items?$select=Title,Link,Specification,Issue&$filter=Revision_x0020_Id eq " + RevisionID,  
+        type: "GET",  
+        headers:  
+        {  
+            "Accept": "application/json;odata=verbose",  
+            "Content-Type": "application/json;odata=verbose",  
+            "X-RequestDigest": $("#__REQUESTDIGEST").val(),  
+            "IF-MATCH": "*",  
+            "X-HTTP-Method": null  
+        },  
+        cache: false,  
+        beforeSend : function() {
+            $.blockUI({ 
+                message: '<h4>Wait... Loading Page</h4>',
+                css: { 
+                border: 'none', 
+                padding: '15px',                          
+                backgroundColor: '#000', 
+                '-webkit-border-radius': '10px', 
+                '-moz-border-radius': '10px', 
+                opacity: .5, 
+                color: '#fff' 
+            } }); 
+        }, 
+        complete: function () {
+            $.unblockUI();                    
+        },
+        success: function(data)   
+        {
+            retrieveTaskItem(RevisionID);  
+            console.log('revision', data);
+            if ( data.d.results.length > 0 )
+            {
+                var item = data.d.results[0];  
+                jQuery("#RevisionName").text(item.Title);
+                jQuery("#DocumentLink").replaceWith(jQuery('<a>').attr('href', item.Link).text(item.Link));
+                NewTitle = item.Specification + " - " + item.Issue;
+            }  
+        },  
+        error: function(data)  
+        {  
+            alert(data.responseText);  
+        }  
+    });  
+}
+
+function retrieveTaskItem(RevisionID)  
+{  
+    jQuery.ajax  
     ({  
-        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('revisions')/items?$select=Title,Link&$filter=Revision_x0020_Id eq " + RevisionID,  
+        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('Tasks')/items?$filter=Revision_x0020_Id eq " + RevisionID,  
         type: "GET",  
         headers:  
         {  
@@ -76,9 +136,9 @@ function retrieveRevisionItem(RevisionID)
             console.log(data);
             if ( data.d.results.length > 0 )
             {
-                var item = data.d.results[0];  
-                jQuery("#RevisionName").text(item.Title);
-                jQuery("#DocumentLink").replaceWith(jQuery('<a>').attr('href', item.Link).text(item.Link));
+                var item = data.d.results[0];
+                currentComments = item.Comments;       
+                assignTo = item.AssignTo;           
             }  
         },  
         error: function(data)  
@@ -86,7 +146,7 @@ function retrieveRevisionItem(RevisionID)
             alert(data.responseText);  
         }  
     });  
-} 
+}
 
 // Get List Item Type metadata
 function GetItemTypeForListName(name) {
@@ -95,14 +155,28 @@ function GetItemTypeForListName(name) {
 
 function updateTask(Decision, TaskID)  
 {  
-    var commentsVal = $("#field-comments").val();
-    
+
+    var utc = new Date().toLocaleString(); 
+    var signature = "Wrote on " + utc;
+    var commentsVal = "";
+
+    if ( currentComments !== null ) {
+        commentsVal = currentComments + '<br>' + $("#field-comments").val() + '<br>' + signature + '<br>';
+    }
+    else {
+        if ( $("#field-comments").val().length > 0  )
+        {
+            commentsVal = $("#field-comments").val() + '<br>' + signature;
+        }
+    }
+        
     var itemType = GetItemTypeForListName("Tasks");
 
     var data = {
         "__metadata": { "type": itemType },
         "Comments": commentsVal,
-        "Task_x0020_Status": Decision
+        "Task_x0020_Status": Decision,
+        "Title": NewTitle,
     };
 
     $.ajax  

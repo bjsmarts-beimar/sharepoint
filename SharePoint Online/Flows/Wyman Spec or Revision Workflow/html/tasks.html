@@ -43,8 +43,18 @@
                 {
                     var item = data.d.results[0];                      
                     
-                    jQuery("#RevisionName").text(item.Title);
-                    jQuery("#DocumentLink").replaceWith(jQuery('<a>').attr('href', item.Link).text(item.Link));                       
+                    jQuery("#RevisionName").text(item.Title);                    
+                    jQuery("#DocumentLink").replaceWith(jQuery('<a>').attr('href', item.Link).attr('target', '_blank').text(item.Link));                       
+
+                    var url = 'exception.aspx?RevisionId=' + RevisionID;
+                
+                    if ( item.HasExceptionForm !== "No") {
+                        url = url + "&Create=No&Source=tasks.aspx";
+                        jQuery("#ExceptionForm").replaceWith(jQuery('<a>').attr('href', url).text('Link to Exception Form'));    
+                    }
+                    else {
+                        
+                    }
                 }  
             },  
             error: function(data)  
@@ -72,6 +82,12 @@
         <div class="form-group">
             <h4><label>Document Link</lalel></h4>
             <label id="DocumentLink">Document Link</label>
+        </div> 
+    </div>
+    <div class="row">
+        <div class="form-group">
+            <h4><label>Exception Form</lalel></h4>
+            <label id="ExceptionForm">N/A</label>
         </div> 
     </div>
 </div>
