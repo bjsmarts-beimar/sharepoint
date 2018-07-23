@@ -3,7 +3,7 @@
 (function () {
     var overrideContext = {};
     overrideContext.Templates = {};
-    overrideContext.Templates.Header = "<h3 style='padding-top: 30px;'><b>Revision Task List<b></h3><br><br><table class='table table-striped table-hover'><tr><th>Revision Name</th><th>Assign To</th><th>Date Assigned</th><th>Task Status</th><th>Comments</th></tr>";
+    overrideContext.Templates.Header = "<h3 style='padding-top: 30px;'><b>Revision Task List<b></h3><br><br><table class='table table-striped table-hover'><tr><th>Specification</th><th>Assign To</th><th>Date Assigned</th><th>Task Status</th><th>Comments</th></tr>";
     overrideContext.Templates.Item = overrideTemplate;
     overrideContext.Templates.Footer = "</table>";
     SPClientTemplates.TemplateManager.RegisterTemplateOverrides(overrideContext);
@@ -12,7 +12,7 @@
     function overrideTemplate(ctx) {
         var RevisionId = getUrlParameter('RevisionId');
 
-        var colorRow = "black";
+        var colorRow = "white";
 
         if ( ctx.CurrentItem.Task_x0020_Status == "Reject" )
             colorRow = "red";
@@ -24,8 +24,8 @@
             return '';
         else 
         
-    return "<tr style='background-color: white;'>"
-    + "<td>" 
+    return "<tr style='background-color: " + colorRow + ";'>"
+    + "<td style='width: 220px;'>" 
     + ctx.CurrentItem.Title 
     + "</td>"
     + "<td>" 
@@ -34,7 +34,7 @@
     + "<td>" 
     + ctx.CurrentItem.Created 
     + "</td>"
-    + "<td style='color: " + colorRow + ";'>" 
+    + "<td>" 
     + ctx.CurrentItem.Task_x0020_Status 
     + "</td>"
     + "<td>" 

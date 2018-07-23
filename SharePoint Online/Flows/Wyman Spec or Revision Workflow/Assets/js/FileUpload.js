@@ -35,6 +35,101 @@ function getApprovals() {
     return "{ 'results': " + results + " }";
 }
 
+function getArrayIds() {
+
+    var results = [];
+    
+    if ( selectedUsers.length > 0) {
+
+        
+        for( var i=0; i<selectedUsers.length; i++)
+        {
+            results.push(selectedUsers[i]);
+        }
+
+    }   
+    
+    return results;
+}
+
+function uploadFileV2WithValidation()
+{    
+    newName = jQuery('#displayName').val();
+    issueName = jQuery('#displayIssue').val();
+    var fileInput = jQuery('#getFile');
+
+    SpecName = newName + '-' + issueName;    
+
+    if ( selectedUsers.length > 0) {
+
+        jQuery("#error-checkboxes").hide();
+
+        if ( newName.length > 0 )
+        {
+            jQuery("#error-revision-name").hide();
+
+            if ( issueName.length > 0 )
+            {
+                jQuery("#error-issue-name").hide();
+
+                if ( fileInput[0].files.length > 0 )
+                {
+                    jQuery("#error-revision-file").hide();
+
+                    var result = checkIfDocumentExist();
+                    result.done(function (value) {
+                        jQuery("#error-revision-file2").show();
+                    });
+                    result.fail(function(value) {
+                        jQuery("#error-revision-file2").hide();
+                        uploadFileV2();
+                    });                    
+                }
+                else {
+                    jQuery("#error-revision-file").show();
+                }
+
+            }
+            else {
+                jQuery("#error-issue-name").show();
+            }            
+        }
+        else {
+            jQuery("#error-revision-name").show();
+        }
+    }
+    else {
+        
+        jQuery("#error-checkboxes").show();
+    }   
+}
+
+function checkIfDocumentExist(){
+
+    // Get the file name from the file input control on the page.
+    var fileInput = jQuery('#getFile');
+    var parts = fileInput[0].value.split('\\');
+    var fileName = parts[parts.length - 1];
+
+    // Get the document URL
+    var documentLibraryUrl = "/sites/wyman/houston/qa/srqw/data/Spec and Revision Library/";
+    var documentURL = _spPageContextInfo.webAbsoluteUrl + "/_api/web/getfilebyserverrelativeurl('" + documentLibraryUrl + fileName + "')";
+
+    var deferred = jQuery.Deferred();
+        jQuery.ajax({
+            url: documentURL, 
+            method:'GET',
+            headers:{Accept:'application/json; odata=verbose'},
+            success:function(data){
+                deferred.resolve(data);
+            },
+            error:function(err){
+                deferred.reject(err);
+            }
+        });
+    return deferred.promise();
+}
+
 function uploadFileWithValidation()
 {
     newName = jQuery('#displayName').val();
@@ -79,6 +174,184 @@ function uploadFileWithValidation()
     }
 
     
+}
+
+function uploadFileV2() {
+
+    // Define the folder path for this example.
+    //var serverRelativeUrlToFolder = '/sites/flows/shared documents';
+    //var serverRelativeUrlToFolder = '/sites/engineering/Spec and Revision Library/';
+    //var dashboardPageUrl = 'https://bjsmarts001.sharepoint.com/sites/engineering/SitePages/Dashboard.aspx';
+
+    var serverRelativeUrlToFolder = '/sites/wyman/houston/qa/srqw/data/Spec and Revision Library/';
+    var dashboardPageUrl = '/sites/wyman/houston/qa/srqw/';
+
+
+    // Get test values from the file input and text input page controls.
+    var fileInput = jQuery('#getFile');
+    newName = jQuery('#displayName').val();
+
+    // Get the server URL.
+    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+
+    // Initiate method calls using jQuery promises.
+    // Get the local file as an array buffer.
+    var getFile = getFileBuffer();
+    getFile.done(function (arrayBuffer) {
+
+        // Add the file to the SharePoint folder.
+        var addFile = addFileToFolder(arrayBuffer);
+        addFile.done(function (file, status, xhr) {
+
+            // Get the list item that corresponds to the uploaded file.    
+            var getItem = getListItem(file.d.ListItemAllFields.__deferred.uri);
+            getItem.done(function (listItem, status, xhr) {
+                
+                console.log('file:', listItem.d);        
+                var RevisionID = listItem.d.ID;                
+                CreateRevision(RevisionID);
+            });
+            getItem.fail(onError); 
+                        
+        });
+        addFile.fail(onError);        
+    });
+    getFile.fail(onError);
+
+    // Get the local file as an array buffer.
+    function getFileBuffer() {
+        var deferred = jQuery.Deferred();
+        var reader = new FileReader();
+        reader.onloadend = function (e) {
+            deferred.resolve(e.target.result);
+        }
+        reader.onerror = function (e) {
+            deferred.reject(e.target.error);
+        }
+        reader.readAsArrayBuffer(fileInput[0].files[0]);
+        return deferred.promise();
+    }
+
+    // Add the file to the file collection in the Shared Documents folder.
+    function addFileToFolder(arrayBuffer) {
+        
+        // Get the file name from the file input control on the page.
+        var parts = fileInput[0].value.split('\\');
+        var fileName = parts[parts.length - 1];
+        
+        // Construct the endpoint.
+        var fileCollectionEndpoint = String.format(
+            "{0}/data/_api/web/getfolderbyserverrelativeurl('{1}')/files" +
+            "/add(overwrite=true, url='{2}')",
+            serverUrl, serverRelativeUrlToFolder, fileName);
+        
+        // Send the request and return the response.
+        // This call returns the SharePoint file.
+        return jQuery.ajax({
+            url: fileCollectionEndpoint,
+            type: "POST",            
+            data: arrayBuffer,
+            processData: false,
+            beforeSend : function() {
+                $.blockUI({ 
+                    message: '<h4>Uploading Document ...</h4>',
+                    css: { 
+                    border: 'none', 
+                    padding: '15px',                          
+                    backgroundColor: '#000', 
+                    '-webkit-border-radius': '10px', 
+                    '-moz-border-radius': '10px', 
+                    opacity: .5, 
+                    color: '#fff' 
+                } }); 
+            }, 
+            complete: function () {
+                $.unblockUI();                    
+            },
+            headers: {
+                "accept": "application/json;odata=verbose",
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                "content-length": arrayBuffer.byteLength
+            }
+        });
+    }
+
+    function getListItem(fileListItemUri) {
+                
+        // Send the request and return the response.
+        return jQuery.ajax({
+                url: fileListItemUri,
+                type: "GET",
+                headers: { "accept": "application/json;odata=verbose" }
+            });
+    }
+
+}
+
+function CreateRevision(RevisionID)
+{
+    var dashboardPageUrl = '/sites/wyman/houston/qa/srqw/';
+    var listName = "Revisions";
+    var commentsVal = $("#field-comments").val();
+    var itemType = GetItemTypeForListName(listName);
+
+    var sp = jQuery('#displayName').val();
+    var is = jQuery('#displayIssue').val();
+    var nm = sp + " - " + is;
+
+    //var user = "8";
+    //var users = "{ 'results': ['55'] }";
+    var Ids = getArrayIds();
+
+    var item = {
+        "__metadata": { "type": itemType },
+        "Title": nm,
+        "Revision_x0020_Id": RevisionID,
+        "Specification": sp,
+        "Issue": is,
+        "ApproversId": {"results": Ids}
+    };
+
+    $.ajax({
+        //url: _spPageContextInfo.siteAbsoluteUrl + "/_api/web/lists/getbytitle('" + listName + "')/items",
+        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/getbytitle('" + listName + "')/items",
+        type: "POST",
+        contentType: "application/json;odata=verbose",
+        data: JSON.stringify(item),
+        beforeSend : function() {
+            $.blockUI({ 
+                message: '<h4>Your spec has been submitted to internal/external reviewers.</h4>',
+                css: { 
+                border: 'none', 
+                padding: '15px',                          
+                backgroundColor: '#000', 
+                '-webkit-border-radius': '10px', 
+                '-moz-border-radius': '10px', 
+                opacity: .5, 
+                color: '#fff' 
+            } }); 
+        }, 
+        complete: function () {
+            setTimeout($.unblockUI, 3000);                    
+        },
+        headers: {
+            "Accept": "application/json;odata=verbose",
+            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+        },
+        success: function (data) {
+            console.log(data);         
+            alert('Your spec has been submitted to internal/external reviewers');
+            window.location = _spPageContextInfo.webAbsoluteUrl + dashboardPageUrl;              
+        },
+        error: function (data) {
+            console.log(data);
+        }
+    });
+}
+
+// Get List Item Type metadata
+function GetItemTypeForListName(name) {
+    return "SP.Data." + name.charAt(0).toUpperCase() + name.split(" ").join("").slice(1) + "ListItem";
 }
 
 // Upload the file.
@@ -337,9 +610,9 @@ function onChangeItemError(error) {
 // Display error messages. 
 function onError(error) {    
     
-    console.log('onError has occurred:', error);
+    console.log('onError has occurred:', error);    
     alert('Error has occurred. Please try to upload the revision file again.');
     
-    //var serverUrl = _spPageContextInfo.webAbsoluteUrl;
-    //window.location = serverUrl + "/SitePages/add.aspx";
+    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+    window.location = serverUrl + "/SitePages/add.aspx";
 }

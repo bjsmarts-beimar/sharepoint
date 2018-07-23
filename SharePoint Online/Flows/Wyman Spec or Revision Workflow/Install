@@ -1,3 +1,4 @@
+
 Site Collection
 ===============
 . create a Wyman Document Library
@@ -5,83 +6,8 @@ Site Collection
 . upload "js" folder
 
 
-UI Site
-=======
-Parent UI Site
-. create a page "add.aspx"
-. create a page "approve.aspx"
-. create a page "feedback.aspx"
-
 Child Data Site
-. create a page "dashboard.aspx"
-. create a page "tasks.aspx"
-. create a page "process.aspx"
-. create a page "implementation.aspx"
-. create a page "rejection.aspx"
-. create a page "complete.aspx"
-. create a page "management.aspx"
-. create a page "exception.aspx"
-
-. update the "Navigation" 
-
-Add New/Revised Spec -> /sites/wyman/eswa/SitePages/add.aspx
-Open New/Revised Spec -> /sites/wyman/eswa/SitePages/dashboard.aspx
-Open Implementations -> /sites/wyman/eswa/SitePages/implementation.aspx
-Completed New/Revised Spec -> /sites/wyman/eswa/SitePages/complete.aspx 
-Rejected New/Revised Spec -> /sites/wyman/eswa/SitePages/rejection.aspx
-Open Management Escalations -> /sites/wyman/eswa/SitePages/escalations.aspx
-
-. update the add.aspx
-Copy the index.html 
-
-. update the dashboard.aspx
-Copy the dashboard.html
-add revisions/in revision list 
-add reference ~sitecollection/SiteAssets/ESWA/js/Dashboard.js
-
-. update the tasks.aspx
-copy the tasks.html
-add tasks
-add reference ~sitecollection/SiteAssets/ESWA/js/Tasks.js
-
-. update the approval.aspx
-copy the approve.html
-
-. update the feedback.aspx
-copy the feedback.html
-
-. update the process.aspx
-copy the process.html
-add task
-add reference ~sitecollection/SiteAssets/ESWA/js/ProcessExt.js
-
-. update the implementation.aspx
-copy the implementation.html
-add implementation
-add reference ~sitecollection/SiteAssets/ESWA/js/Implementation.js
-
-. update the rejection.aspx
-copy the rejection.html
-add revisions
-add reference ~sitecollection/SiteAssets/ESWA/js/Rejected.js
-
-. update the complete.aspx
-copy the complete.html
-add revisions
-add reference ~sitecollection/SiteAssets/ESWA/js/accepted.js
-
-. update the reprocess.aspx
-copy the reprocess.html
-add tasks
-add reference ~sitecollection/SiteAssets/ESWA/js/ReprocessExt.js
-
-. update the "exception.aspx"
-copy the exception.html
-add links
-add reference ~sitecollection/SiteAssets/ESWA/js/ExceptionExt.js
-
-UI Data
-=======
+===============
 
 . create the sharepoint list "Groups"
 
@@ -109,6 +35,8 @@ UI Data
     Acknowlegde             (free Text) Yes|Not Yet
     AssignTo                (free text)
     AssignToEmail           (free text)
+    IsReprocess             (choice) Yes|No
+
 
 . Create One View on the list "Tasks"
     Pending
@@ -169,14 +97,108 @@ UI Data
 
 . create the document library "Attachments"
 . create the following list "Links"
+   Link                    (text field)
+   Revision Id             (number field)
 
+
+Parent Site
+===========
+
+Parent UI Site
+==============
+
+. create a page "add.aspx"
+. create a page "approve.aspx"
+. create a page "feedback.aspx"
+
+. update the add.aspx
+Copy the add.html
+
+. update the approval.aspx
+copy the approve.html
+
+. update the feedback.aspx
+copy the feedback.html 
+
+Child Data Site
+===============
+
+. create a page "dashboard.aspx"
+. create a page "tasks.aspx"
+. create a page "process.aspx"
+. create a page "implementation.aspx"
+. create a page "rejection.aspx"
+. create a page "complete.aspx"
+. create a page "management.aspx"
+. create a page "exception.aspx"
+. create a page "open.aspx"
+
+https://precastcorp.sharepoint.com/sites/wyman/SiteAssets/srqw
+
+. update the dashboard.aspx
+Copy the dashboard.html
+add revisions/in revision list 
+add reference ~sitecollection/SiteAssets/SRQW/js/Dashboard.js
+
+. update the tasks.aspx
+copy the tasks.html
+add tasks
+add reference ~sitecollection/SiteAssets/SRQW/js/Tasks.js
+
+
+. update the process.aspx
+copy the process.html
+add task
+add reference ~sitecollection/SiteAssets/SRQW/js/ProcessExt.js
+
+. update the implementation.aspx
+copy the implementation.html
+add implementation
+add reference ~sitecollection/SiteAssets/SRQW/js/Implementation.js
+
+. update the rejection.aspx
+copy the rejection.html
+add revisions
+add reference ~sitecollection/SiteAssets/SRQW/js/Rejected.js
+
+. update the complete.aspx
+copy the complete.html
+add revisions
+add reference ~sitecollection/SiteAssets/SRQW/js/accepted.js
+
+. update the reprocess.aspx
+copy the reprocess.html
+add tasks
+add reference ~sitecollection/SiteAssets/SRQW/js/ReprocessExt.js
+
+. update the "exception.aspx"
+copy the exception.html
+add links
+add reference ~sitecollection/SiteAssets/SRQW/js/ExceptionExt.js
+
+. update the "open.aspx"
+copy the open.html
+add links
+add reference ~sitecollection/SiteAssets/SRQW/js/OpenTasks.js
+
+
+. update the "Navigation" 
+
+Add New/Revised Spec -> /sites/wyman/eswa/SitePages/add.aspx
+Open Tasks -> /sites/wyman/eswa/SitePages/open.aspx
+Open New/Revised Spec -> /sites/wyman/eswa/SitePages/dashboard.aspx
+Open Implementations -> /sites/wyman/eswa/SitePages/implementation.aspx
+Completed New/Revised Spec -> /sites/wyman/eswa/SitePages/complete.aspx 
+Rejected New/Revised Spec -> /sites/wyman/eswa/SitePages/rejection.aspx
+Open Management Escalations -> /sites/wyman/eswa/SitePages/escalations.aspx
 
 Workflows
 =========
 
-. create a 'Initial Notification Workflow'
-. create a 'Daily Process Revisions Workflow'
-. create a 'Daily 10 Days Overdue Workflow'
-. create a 'Daily 20 Days Overdue Workflow'
-. create a 'Daily 30 Days Overdue Workflow'
-. create a 'Implementation Notification Workflow'
+. create a 'Quality Engineering Initial Notification Flow'
+. create a 'Quality Engineering Check Revisions Flow'
+. create a 'Quality Engineering Implementation Notification Flow'
+. create a 'Quality Engineering Reprocess Notification Flow'
+. create a 'Quality Engineering Daily 10 Days Overdue Flow'
+. create a 'Quality Engineering Daily 20 Days Overdue Flow'
+. create a 'Quality Engineering Daily 30 Days Overdue Flow'
