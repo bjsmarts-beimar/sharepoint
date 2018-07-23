@@ -12,19 +12,22 @@
     function overrideTemplate(ctx) {
         var RevisionId = getUrlParameter('RevisionId');
 
-        var colorRow = "white";
+        var colorRow = "black";
+        var backgroundColor = "white";
 
-        if ( ctx.CurrentItem.Task_x0020_Status == "Reject" )
-            colorRow = "red";
+        if ( ctx.CurrentItem.Task_x0020_Status == "Reject" ) {
+            colorRow = "white";
+            backgroundColor = "red";
+        }
 
-        if ( ctx.CurrentItem.Task_x0020_Status == "Approve" )
-            colorRow = "lightgreen";
+        if ( ctx.CurrentItem.Task_x0020_Status == "Approved" )
+                backgroundColor = "lightgreen";
         
         if (RevisionId !== ctx.CurrentItem.Revision_x0020_Id )
             return '';
         else 
         
-    return "<tr style='background-color: " + colorRow + ";'>"
+    return "<tr style='background-color: " + backgroundColor  + "; color: " + colorRow + "'>"
     + "<td style='width: 220px;'>" 
     + ctx.CurrentItem.Title 
     + "</td>"

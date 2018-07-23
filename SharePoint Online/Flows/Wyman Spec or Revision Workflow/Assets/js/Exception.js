@@ -44,17 +44,31 @@ jQuery(document).ready(function () {
 
     var Source = getUrlParameter('Source');
 
-    if ( Source === 'tasks.aspx')
+    if ( Source === undefined )
     {
         jQuery("#OkButton").hide();
-        jQuery("#CancelButton").text('Back');
+        jQuery("#CancelButton").hide();
+        jQuery("#addFileButton").hide();
+        jQuery('#getFile').hide();
+        //jQuery("#CancelButton").text('Back');
     }
     else {
         jQuery("#OkButton").show();
-        jQuery("#CancelButton").text('Cancel');
+        jQuery("#CancelButton").show();
+        jQuery("#addFileButton").show();
+        jQuery('#getFile').show();
+        //jQuery("#CancelButton").text('Cancel');
     }
                 
 });
+
+
+function deleteAttachment(CurrentID)
+{
+    if (confirm('Are you sure you want to delete this item?')) {  
+        DeleteLink(CurrentID);
+    }
+}
 
 function stripHtml(html){
     // Create a new div element
@@ -162,7 +176,7 @@ function uploadAttachment()
     {
         jQuery("#error-revision-file").hide();
 
-        var serverRelativeUrlToFolder = '/sites/wyman/eswa/data/Attachments/';
+        var serverRelativeUrlToFolder = '/sites/wyman/houston/qa/srqw/data/Attachments/';
         
         // Get test values from the file input and text input page controls.
         //var fileInput = jQuery('#getFile');
@@ -190,10 +204,35 @@ function uploadAttachment()
     }
     else {
         jQuery("#error-revision-file").show();
-    }
+    }    
+}
 
-
+function DeleteLink(value)
+{
+    var listName = "Links";
     
+    $.ajax({        
+        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('Links')/items(" + value + ")",    
+        method: "POST",    
+        headers: {    
+            "accept": "application/json;odata=verbose",    
+            "content-type": "application/json;odata=verbose",    
+            "X-RequestDigest": $("#__REQUESTDIGEST").val(),    
+            "IF-MATCH": "*",    
+            "X-HTTP-Method": "DELETE"    
+        },    
+        success: function(data) {    
+            alert("You item has been deleted successfully");
+            var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+            var RevisionId = getUrlParameter('RevisionId');
+            var Create = getUrlParameter('Create');
+            var Source = getUrlParameter('Source');
+            window.location = serverUrl + "/SitePages/exception.aspx?RevisionId=" + RevisionId + "&Create=" + Create + "&Source=" + Source;
+        },    
+        error: function(error) {    
+            alert(JSON.stringify(error));        
+        }        
+    })      
 }
 
 function CreateLink(Name, Link)

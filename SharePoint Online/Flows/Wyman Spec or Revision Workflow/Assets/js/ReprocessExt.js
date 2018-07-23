@@ -9,6 +9,8 @@
      
     function overrideTemplate(ctx) {
         var RevisionId = getUrlParameter('RevisionId');
+
+        console.log(ctx.CurrentItem.Revision_x0020_Id);
         
         if (RevisionId !== ctx.CurrentItem.Revision_x0020_Id )
             return '';

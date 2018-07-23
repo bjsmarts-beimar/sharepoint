@@ -9,6 +9,13 @@
      
     function overrideTemplate(ctx) {
         var RevisionId = getUrlParameter('RevisionId');
+        var Source = getUrlParameter('Source');
+        var TextAs = '';        
+
+        if ( Source !== undefined )
+        {
+            TextAs = 'X';
+        }
         
         if (RevisionId !== ctx.CurrentItem.Revision_x0020_Id )
             return '';
@@ -19,7 +26,7 @@
     + "<a target='_blank' href=" + ctx.CurrentItem.Link + ">" + ctx.CurrentItem.Title + "</a>" 
     + "</td>"
     + "<td>" 
-    + "<a href='javascript:deleteAttachment(" + ctx.CurrentItem.ID + ")'>X</a>" 
+    + "<a href='javascript:deleteAttachment(" + ctx.CurrentItem.ID + ")'>" + TextAs + "</a>" 
     + "</td>"
     + "</tr>";
     }

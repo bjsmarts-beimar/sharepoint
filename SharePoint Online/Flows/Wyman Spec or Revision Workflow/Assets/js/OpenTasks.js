@@ -19,7 +19,7 @@
     + ctx.CurrentItem.Task_x0020_Status 
     + "</td>"
     + "<td>" 
-    + ctx.CurrentItem.AssignTo
+    + ctx.CurrentItem.Author[0].title
     + "</td>"
     + "<td>" 
     + ctx.CurrentItem.Created

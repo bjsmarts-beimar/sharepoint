@@ -20,7 +20,7 @@ function Approve()
     if (confirm('Are you sure you want to Accept this Specification?')) {
         
         var TaskID = getUrlParameter('TaskId');
-        updateTask('Approve', TaskID);                        
+        updateTask('Approved', TaskID);                        
                                 
     } else {
         // Do nothing!
@@ -70,7 +70,7 @@ function getUrlParameter(sParam) {
 function retrieveRevisionItem(RevisionID)  
 {  
     jQuery.ajax  
-    ({          url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('revisions')/items?$select=Title,Link,Specification,Issue&$filter=Revision_x0020_Id eq " + RevisionID,  
+    ({          url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('revisions')/items?$select=Title,Link,Specification,Issue,HasExceptionForm&$filter=Revision_x0020_Id eq " + RevisionID,  
         type: "GET",  
         headers:  
         {  
@@ -99,7 +99,8 @@ function retrieveRevisionItem(RevisionID)
         },
         success: function(data)   
         {
-            retrieveTaskItem(RevisionID);  
+            var taskID = getUrlParameter('TaskId');
+            retrieveTaskItem(taskID);  
             console.log('revision', data);
             if ( data.d.results.length > 0 )
             {
@@ -107,6 +108,13 @@ function retrieveRevisionItem(RevisionID)
                 jQuery("#RevisionName").text(item.Title);
                 jQuery("#DocumentLink").replaceWith(jQuery('<a>').attr('href', item.Link).text(item.Link));
                 NewTitle = item.Specification + " - " + item.Issue;
+
+                var url = 'exception.aspx?RevisionId=' + RevisionID;
+                
+                if ( item.HasExceptionForm !== "No") {
+                    url = url + "&Create=No";
+                    jQuery("#ExceptionForm").replaceWith(jQuery('<a target="_blank">').attr('href', url).text('Link to Exception Form'));    
+                }                
             }  
         },  
         error: function(data)  
@@ -116,11 +124,11 @@ function retrieveRevisionItem(RevisionID)
     });  
 }
 
-function retrieveTaskItem(RevisionID)  
+function retrieveTaskItem(taskID)  
 {  
     jQuery.ajax  
     ({  
-        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('Tasks')/items?$filter=Revision_x0020_Id eq " + RevisionID,  
+        url: _spPageContextInfo.webAbsoluteUrl + "/data/_api/web/lists/GetByTitle('Tasks')/items?$filter=ID eq " + taskID,  
         type: "GET",  
         headers:  
         {  
@@ -138,7 +146,19 @@ function retrieveTaskItem(RevisionID)
             {
                 var item = data.d.results[0];
                 currentComments = item.Comments;       
-                assignTo = item.AssignTo;           
+                assignTo = item.AssignTo;                                  
+                
+                if ( item.Task_x0020_Status !== "Pending")
+                {
+                    jQuery("#error-buttons").show();
+                    jQuery("#ApproveBtn").hide();
+                    jQuery("#RejectBtn").hide();
+                }
+                else {
+                    jQuery("#error-buttons").hide();
+                    jQuery("#ApproveBtn").show();
+                    jQuery("#RejectBtn").show();
+                }
             }  
         },  
         error: function(data)  

@@ -25,7 +25,21 @@ function getApprovals() {
         
         for( var i=0; i<selectedUsers.length; i++)
         {
-            results = results + "'" + selectedUsers[i] + "',";
+
+            // if ( selectedUsers[i].indexOf('@') < 0 )
+            // {
+            //     results = results + "'" + selectedUsers[i] + "',";
+            // }
+            
+            if ( selectedUsers[i].indexOf('@') < 0 )
+            {
+                results = results + "'" + selectedUsers[i] + "',";
+            }
+            else {
+                let externalUser = selectedUsers[i].split('|');
+                results = results + "'" + externalUser[0] + "',";
+            }
+            
         }
 
         results = results.substring(0, results.length-1);
@@ -35,18 +49,67 @@ function getApprovals() {
     return "{ 'results': " + results + " }";
 }
 
+function getExternalApprovals() {
+
+    var results = "";
+
+    if ( selectedUsers.length > 0 ) {
+
+        for( var i=0; i<selectedUsers.length; i++)
+        {
+            if ( selectedUsers[i].indexOf('@') > 0 )
+            {
+                let externalUser = selectedUsers[i].split('|');
+                results += externalUser[2] + ";";
+            }
+        }
+
+        results = results.substring(0, results.length-1); 
+    }
+
+    return results;
+}
+
 function getArrayIds() {
 
     var results = [];
     
     if ( selectedUsers.length > 0) {
-
         
         for( var i=0; i<selectedUsers.length; i++)
         {
-            results.push(selectedUsers[i]);
+            if ( selectedUsers[i].indexOf('@') < 0 )
+            {
+                results.push(selectedUsers[i]);
+            }            
+            else {
+                let externalUser = selectedUsers[i].split('|');
+                //results = results + "'" + externalUser[0] + "',";
+                results.push(externalUser[0]);
+            }
+        }
+    }   
+    
+    return results;
+}
+
+function getExternalArrayIds() {
+
+    var results = "";
+    
+    if ( selectedUsers.length > 0) {
+        
+        for( var i=0; i<selectedUsers.length; i++)
+        {
+            if ( selectedUsers[i].indexOf('@') > 0 )
+            {
+                //results += selectedUsers[i] + ";";
+                let externalUser = selectedUsers[i].split('|');
+                results += externalUser[2] + ";";
+            }            
         }
 
+        results = results.substring(0, results.length-1);
     }   
     
     return results;
@@ -184,7 +247,7 @@ function uploadFileV2() {
     //var dashboardPageUrl = 'https://bjsmarts001.sharepoint.com/sites/engineering/SitePages/Dashboard.aspx';
 
     var serverRelativeUrlToFolder = '/sites/wyman/houston/qa/srqw/data/Spec and Revision Library/';
-    var dashboardPageUrl = '/sites/wyman/houston/qa/srqw/';
+    var dashboardPageUrl = '/sites/wyman/houston/qa/srqw/SitePages/Home.aspx';
 
 
     // Get test values from the file input and text input page controls.
@@ -206,9 +269,10 @@ function uploadFileV2() {
             // Get the list item that corresponds to the uploaded file.    
             var getItem = getListItem(file.d.ListItemAllFields.__deferred.uri);
             getItem.done(function (listItem, status, xhr) {
-                
-                console.log('file:', listItem.d);        
-                var RevisionID = listItem.d.ID;                
+                var item = listItem.d;
+                console.log('Specification Id: ', item.Id);
+                console.log('file:', item);        
+                var RevisionID = item.Id;                
                 CreateRevision(RevisionID);
             });
             getItem.fail(onError); 
@@ -290,7 +354,7 @@ function uploadFileV2() {
 
 function CreateRevision(RevisionID)
 {
-    var dashboardPageUrl = '/sites/wyman/houston/qa/srqw/';
+    var dashboardPageUrl = '/sites/wyman/houston/qa/srqw/SitePages/Home.aspx';
     var listName = "Revisions";
     var commentsVal = $("#field-comments").val();
     var itemType = GetItemTypeForListName(listName);
@@ -299,9 +363,15 @@ function CreateRevision(RevisionID)
     var is = jQuery('#displayIssue').val();
     var nm = sp + " - " + is;
 
+    var fileInput = jQuery('#getFile');
+    var parts = fileInput[0].value.split('\\');
+    var fileName = parts[parts.length - 1];
+    var documentLibraryUrl = "/sites/wyman/houston/qa/srqw/data/Spec and Revision Library/";
+
     //var user = "8";
     //var users = "{ 'results': ['55'] }";
     var Ids = getArrayIds();
+    var ExtIds = getExternalArrayIds();
 
     var item = {
         "__metadata": { "type": itemType },
@@ -309,6 +379,11 @@ function CreateRevision(RevisionID)
         "Revision_x0020_Id": RevisionID,
         "Specification": sp,
         "Issue": is,
+        "Revision_x0020_Status": "In Revision",
+        "Link": documentLibraryUrl + fileName,
+        "Initiator": _spPageContextInfo.userDisplayName,
+        "InitiatorEmail": _spPageContextInfo.userEmail,
+        "ExtApprovers": ExtIds,
         "ApproversId": {"results": Ids}
     };
 
@@ -340,11 +415,11 @@ function CreateRevision(RevisionID)
         },
         success: function (data) {
             console.log(data);         
-            alert('Your spec has been submitted to internal/external reviewers');
-            window.location = _spPageContextInfo.webAbsoluteUrl + dashboardPageUrl;              
+            //alert('Your spec has been submitted to internal/external reviewers');
+            window.location = _spPageContextInfo.webAbsoluteUrl;              
         },
         error: function (data) {
-            console.log(data);
+            alert(data);
         }
     });
 }
@@ -484,8 +559,14 @@ function uploadFile() {
         //var users = "{ 'results': ['8', '13'] }";
         var users = getApprovals();
         
-        var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ApproversId':{3},'Specification':'{4}','Issue':'{5}'}}",
-            itemMetadata.type, SpecName, SpecName, users, newName, issueName );
+        //var extUsers = "john.smith@tech.com";
+        var extUsers = getExternalApprovals();
+
+        var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ApproversId':{3},'Specification':'{4}','Issue':'{5}','ExtApprovers':'{6}'}}",
+            itemMetadata.type, SpecName, SpecName, users, newName, issueName, extUsers );
+        
+        // var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ApproversId':{3},'Specification':'{4}','Issue':'{5}'}}",
+        //     itemMetadata.type, SpecName, SpecName, users, newName, issueName );
 
         //var body = String.format("{{'__metadata':{{'type':'{0}'}},'Title':'{1}','ApproversId':{2}}}",
         //itemMetadata.type, newName, users );
