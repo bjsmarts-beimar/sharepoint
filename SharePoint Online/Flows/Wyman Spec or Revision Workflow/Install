@@ -1,102 +1,34 @@
-Site Collection
-===============
-. create a Wyman Document Library
-. upload "treeView" folder
-. upload "js" folder
 
+. create the parent site
+    Specification Review Quality Workflow Portal  /srqw
 
-UI Site
-=======
-Parent UI Site
-. create a page "add.aspx"
-. create a page "approve.aspx"
-. create a page "feedback.aspx"
+. create the child site
+    Specification Review Quality Workflow Data Site /Data
 
-Child Data Site
-. create a page "dashboard.aspx"
-. create a page "tasks.aspx"
-. create a page "process.aspx"
-. create a page "implementation.aspx"
-. create a page "rejection.aspx"
-. create a page "complete.aspx"
-. create a page "management.aspx"
-. create a page "exception.aspx"
+. On the parent site enable Publishing Site Infrastructure
 
-. update the "Navigation" 
+On the Child Site
+=================
 
-Add New/Revised Spec -> /sites/wyman/eswa/SitePages/add.aspx
-Open New/Revised Spec -> /sites/wyman/eswa/SitePages/dashboard.aspx
-Open Implementations -> /sites/wyman/eswa/SitePages/implementation.aspx
-Completed New/Revised Spec -> /sites/wyman/eswa/SitePages/complete.aspx 
-Rejected New/Revised Spec -> /sites/wyman/eswa/SitePages/rejection.aspx
-Open Management Escalations -> /sites/wyman/eswa/SitePages/escalations.aspx
+. double-click on "Site Assets" folder and create "srqw" folder
 
-. update the add.aspx
-Copy the index.html 
+. add the following folders to the "srqw" folder: blockUI, bootstrap, jQuery, js, moment, treeView
 
-. update the dashboard.aspx
-Copy the dashboard.html
-add revisions/in revision list 
-add reference ~sitecollection/SiteAssets/ESWA/js/Dashboard.js
-
-. update the tasks.aspx
-copy the tasks.html
-add tasks
-add reference ~sitecollection/SiteAssets/ESWA/js/Tasks.js
-
-. update the approval.aspx
-copy the approve.html
-
-. update the feedback.aspx
-copy the feedback.html
-
-. update the process.aspx
-copy the process.html
-add task
-add reference ~sitecollection/SiteAssets/ESWA/js/ProcessExt.js
-
-. update the implementation.aspx
-copy the implementation.html
-add implementation
-add reference ~sitecollection/SiteAssets/ESWA/js/Implementation.js
-
-. update the rejection.aspx
-copy the rejection.html
-add revisions
-add reference ~sitecollection/SiteAssets/ESWA/js/Rejected.js
-
-. update the complete.aspx
-copy the complete.html
-add revisions
-add reference ~sitecollection/SiteAssets/ESWA/js/accepted.js
-
-. update the reprocess.aspx
-copy the reprocess.html
-add tasks
-add reference ~sitecollection/SiteAssets/ESWA/js/ReprocessExt.js
-
-. update the "exception.aspx"
-copy the exception.html
-add links
-add reference ~sitecollection/SiteAssets/ESWA/js/ExceptionExt.js
-
-UI Data
-=======
+. upload files from source code to the folders created in previous step
 
 . create the sharepoint list "Groups"
 
 . create the sharepoint list "Approvers"
+
 . Add the following columns to this list "Approvers":
-    Account Name (text field)
-    Account (Person field)
+    (Title) Account Name (text field)
+    Account (Person field)    
+    ExternalAccount (choice field) Yes|No
+    ExternalEmail (text field)
     Group (lookup field -> Groups)
 
 . create the document library "Spec and Revision Library"
-. add the following columns to this library "Spec and Revision Library"
-    Approvers               (multiple people field)
-    Specification           (text field)
-    Issue                   (text field)
-
+    
 . create the sharepoint list "Tasks"
 
 . Add the following columns to this list "Tasks":
@@ -106,12 +38,14 @@ UI Data
     Issue                   (text field)
     Task Status             (choice field) Pending|Approved|Reject 
     Comments                (free text)
-    Acknowlegde             (free Text) Yes|Not Yet
     AssignTo                (free text)
     AssignToEmail           (free text)
+    IsReprocess             (choice field) Yes|No
+    PersonAssignTo          (Person field)
 
 . Create One View on the list "Tasks"
     Pending
+    Open Tasks
 
 . create the sharepoint list "Revisions"
 . Add the following columns to this list "Revisions":
@@ -121,10 +55,13 @@ UI Data
     Issue                   (text field)
     Revision Status         (choice field) Initiation|In Revision|Accepted|Rejected|Complete
     Initiator               (text field)
+    InitiatorEmail          (text field)
     Link                    (text field)    
     HasExceptionForm        (choice field) Yes|No
     Approvers               (Person field)
     Comments                (free text)
+    ExtApprovers            (text field)
+
 
 . Create three views on the list "Revisions" 
              Complete 
@@ -154,211 +91,141 @@ UI Data
     Implementation Id       (number field)
     Comments                (free Text)
 
-. create the following list "Escalations"
-. Add the following columns to the list "Escalations"
-    Revision Name           (text field)
-    Revision Id             (number field)
-    Specification           (text field)
-    Issue                   (text field)
-    Revision Date Created   (date field)    
-    Comments                (free Text)
-    Completed               (choice field) Yes|No
-
-. Create One View on the list "Escalations"
-    Pending
-
 . create the document library "Attachments"
+
 . create the following list "Links"
+   Link                     (text field)
+   Revision Id              (Number)
 
-
-Workflows
-=========
-
-. create a 'Initial Notification Workflow'
-. create a 'Daily Process Revisions Workflow'
-. create a 'Daily 10 Days Overdue Workflow'
-. create a 'Daily 20 Days Overdue Workflow'
-. create a 'Daily 30 Days Overdue Workflow'
-. create a 'Implementation Notification Workflow'
-Site Collection
-===============
-. create a Wyman Document Library
-. upload "treeView" folder
-. upload "js" folder
-
-
-UI Site
-=======
-Parent UI Site
-. create a page "add.aspx"
-. create a page "approve.aspx"
-. create a page "feedback.aspx"
-
-Child Data Site
+Pages
 . create a page "dashboard.aspx"
 . create a page "tasks.aspx"
 . create a page "process.aspx"
 . create a page "implementation.aspx"
 . create a page "rejection.aspx"
 . create a page "complete.aspx"
-. create a page "management.aspx"
+. create a page "reprocess.aspx"
 . create a page "exception.aspx"
-
-. update the "Navigation" 
-
-Add New/Revised Spec -> /sites/wyman/eswa/SitePages/add.aspx
-Open New/Revised Spec -> /sites/wyman/eswa/SitePages/dashboard.aspx
-Open Implementations -> /sites/wyman/eswa/SitePages/implementation.aspx
-Completed New/Revised Spec -> /sites/wyman/eswa/SitePages/complete.aspx 
-Rejected New/Revised Spec -> /sites/wyman/eswa/SitePages/rejection.aspx
-Open Management Escalations -> /sites/wyman/eswa/SitePages/escalations.aspx
-
-. update the add.aspx
-Copy the index.html 
 
 . update the dashboard.aspx
 Copy the dashboard.html
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
 add revisions/in revision list 
-add reference ~sitecollection/SiteAssets/ESWA/js/Dashboard.js
+add reference 
+
 
 . update the tasks.aspx
 copy the tasks.html
-add tasks
-add reference ~sitecollection/SiteAssets/ESWA/js/Tasks.js
-
-. update the approval.aspx
-copy the approve.html
-
-. update the feedback.aspx
-copy the feedback.html
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
+add tasks/Pending
+add reference 
+TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/Tasks.js
+PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/Tasks.js
 
 . update the process.aspx
 copy the process.html
-add task
-add reference ~sitecollection/SiteAssets/ESWA/js/ProcessExt.js
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
+add task/Open Tasks
+add reference 
+TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/ProcessExt.js
+PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/ProcessExt.js
+
 
 . update the implementation.aspx
 copy the implementation.html
-add implementation
-add reference ~sitecollection/SiteAssets/ESWA/js/Implementation.js
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
+add implementation/Pending
+add reference 
+TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/Implementation.js
+PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/Implementation.js
 
 . update the rejection.aspx
 copy the rejection.html
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
 add revisions
-add reference ~sitecollection/SiteAssets/ESWA/js/Rejected.js
+add reference 
+TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/Rejected.js
+PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/Rejected.js
 
 . update the complete.aspx
 copy the complete.html
 add revisions
-add reference ~sitecollection/SiteAssets/ESWA/js/accepted.js
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
+add reference 
+TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/accepted.js
+PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/accepted.js
 
 . update the reprocess.aspx
 copy the reprocess.html
 add tasks
-add reference ~sitecollection/SiteAssets/ESWA/js/ReprocessExt.js
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
+add reference
+TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/ReprocessExt.js
+PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/ReprocessExt.js
 
 . update the "exception.aspx"
 copy the exception.html
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
 add links
-add reference ~sitecollection/SiteAssets/ESWA/js/ExceptionExt.js
+add reference 
+TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/ExceptionExt.js
+PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/ExceptionExt.js
 
-UI Data
-=======
+. move the following pages to the Parent site
+"dashboard.aspx"
+"tasks.aspx"
+"process.aspx"
+"implementation.aspx"
+"rejection.aspx"
+"complete.aspx"
+"reprocess.aspx"
+"exception.aspx"
 
-. create the sharepoint list "Groups"
+On the Parent Site
+==================
 
-. create the sharepoint list "Approvers"
-. Add the following columns to this list "Approvers":
-    Account Name (text field)
-    Account (Person field)
-    Group (lookup field -> Groups)
+. create a page "add.aspx"
+. create a page "approval.aspx"
+. create a page "feedback.aspx"
 
-. create the document library "Spec and Revision Library"
-. add the following columns to this library "Spec and Revision Library"
-    Approvers               (multiple people field)
-    Specification           (text field)
-    Issue                   (text field)
+. update the index.aspx
+Copy the add.html 
 
-. create the sharepoint list "Tasks"
+. update the approval.aspx
+copy the approval.html
 
-. Add the following columns to this list "Tasks":
-    Revision Name           (text field)
-    Revision Id             (number field)
-    Specification           (text field)
-    Issue                   (text field)
-    Task Status             (choice field) Pending|Approved|Reject 
-    Comments                (free text)
-    Acknowlegde             (free Text) Yes|Not Yet
-    AssignTo                (free text)
-    AssignToEmail           (free text)
+. update the feedback.aspx
+copy the feedback.html
 
-. Create One View on the list "Tasks"
-    Pending
+. update the "Navigation" 
 
-. create the sharepoint list "Revisions"
-. Add the following columns to this list "Revisions":
-    Revision Name           (text field)
-    Revision Id             (number field)
-    Specification           (text field)
-    Issue                   (text field)
-    Revision Status         (choice field) Initiation|In Revision|Accepted|Rejected|Complete
-    Initiator               (text field)
-    Link                    (text field)    
-    HasExceptionForm        (choice field) Yes|No
-    Approvers               (Person field)
-    Comments                (free text)
-
-. Create three views on the list "Revisions" 
-             Complete 
-             In Revision
-             Rejected
-
-. create the sharepoint list "Implementations"
-. Add the following columns to this list "Implementations"
-    Revision Name           (text field)
-    Revision Id             (number field)
-    Specification           (text field)
-    Issue                   (text field)
-    Revision Date Created   (date field)
-    Comments                (free Text)
-    Implemented             (choice field) Yes|No
-
-. Create One View on the list "Implementations"
-    Pending
-
-. create the sharepoint list "Exceptions"
-. Add the following columns to the list "Exceptions"
-    Revision Name           (text field)
-    Revision Id             (number field)
-    Specification           (text field)
-    Issue                   (text field)
-    Revision Date Created   (date field)
-    Implementation Id       (number field)
-    Comments                (free Text)
-
-. create the following list "Escalations"
-. Add the following columns to the list "Escalations"
-    Revision Name           (text field)
-    Revision Id             (number field)
-    Specification           (text field)
-    Issue                   (text field)
-    Revision Date Created   (date field)    
-    Comments                (free Text)
-    Completed               (choice field) Yes|No
-
-. Create One View on the list "Escalations"
-    Pending
-
-. create the document library "Attachments"
-. create the following list "Links"
+Add New/Revised Specification -> /sites/wyman/srqw/SitePages/add.aspx
+Open New/Revised Specifications -> /sites/wyman/srqw/SitePages/dashboard.aspx
+Open Implementations -> /sites/wyman/srqw/SitePages/implementation.aspx
+Completed New/Revised Specifications -> /sites/wyman/srqw/SitePages/complete.aspx 
+Rejected New/Revised Specifications -> /sites/wyman/srqw/SitePages/rejection.aspx
 
 
 Workflows
 =========
-
-. create a 'Initial Notification Workflow'
-. create a 'Daily Process Revisions Workflow'
-. create a 'Daily 10 Days Overdue Workflow'
-. create a 'Daily 20 Days Overdue Workflow'
-. create a 'Daily 30 Days Overdue Workflow'
-. create a 'Implementation Notification Workflow'
+. create a 'Quality Engineering Initial Notification Flow'
+. create a 'Quality Engineering Daily Overdue Flow'
+. create a 'Quality Engineering Check Revisions Flow'
+. create a 'Quality Engineering Reprocess Notification Flow'
+. create a 'Quality Engineering Implementation Notification Flow'
