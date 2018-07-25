@@ -58,7 +58,7 @@ On the Child Site
     InitiatorEmail          (text field)
     Link                    (text field)    
     HasExceptionForm        (choice field) Yes|No
-    Approvers               (Person field)
+    Approvers               (Person field) Allow multiple selections: Yes
     Comments                (free text)
     ExtApprovers            (text field)
 
@@ -204,8 +204,14 @@ On the Parent Site
 . create a page "approval.aspx"
 . create a page "feedback.aspx"
 
-. update the index.aspx
+. update the add.aspx
 Copy the add.html 
+
+Copy and Paste
+TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
+PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
+
+Remove: houston/qa/
 
 . update the approval.aspx
 copy the approval.html
