@@ -57,7 +57,7 @@ On the Child Site
     Initiator               (text field)
     InitiatorEmail          (text field)
     Link                    (text field)    
-    HasExceptionForm        (choice field) Yes|No
+    HasExceptionForm        (choice field) Yes|No  Default Value: No
     Approvers               (Person field) Allow multiple selections: Yes
     Comments                (free text)
     ExtApprovers            (text field)
@@ -121,7 +121,7 @@ copy the tasks.html
 Copy and Paste
 TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
 PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
-add tasks/Pending
+add tasks/All Items
 add reference 
 TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/Tasks.js
 PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/Tasks.js
@@ -131,7 +131,7 @@ copy the process.html
 Copy and Paste
 TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
 PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
-add task/Open Tasks
+add task/All Items
 add reference 
 TEST: ~sitecollection/srqw/data/SiteAssets/srqw/js/ProcessExt.js
 PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/ProcessExt.js
@@ -169,7 +169,7 @@ PROD: ~sitecollection/houston/qa/srqw/data/SiteAssets/SRQW/js/accepted.js
 
 . update the reprocess.aspx
 copy the reprocess.html
-add tasks
+add tasks/All Items
 Copy and Paste
 TEST:  https://bjsmartssm.sharepoint.com/sites/wyman/srqw/data/SiteAssets/srqw/
 PROD: https://precastcorp.sharepoint.com/sites/wyman/houston/qa/srqw/data/SiteAssets/SRQW/
